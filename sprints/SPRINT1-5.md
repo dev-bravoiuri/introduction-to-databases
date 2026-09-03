@@ -35,11 +35,11 @@ Nesta Sprint 1/5, o foco é exclusivamente o **planejamento do banco de dados**.
 
 **Nome completo:**
 
-> Preencha aqui.
+> Iuri Bravo Pereira Resmini.
 
 **Nome escolhido para o banco de dados:**
 
-```text
+```gerenciamento_salao_beleza
 
 ```
 
@@ -51,29 +51,9 @@ Escolha um domínio para o banco de dados que será desenvolvido durante toda a 
 
 O tema é livre, desde que permita a criação de um banco relacional com múltiplas tabelas e relacionamentos coerentes.
 
-Alguns exemplos:
-
-- sistema acadêmico;
-- biblioteca;
-- clínica;
-- loja;
-- restaurante;
-- academia;
-- hotel;
-- oficina;
-- locadora;
-- e-commerce;
-- sistema de eventos;
-- sistema de transporte;
-- imobiliária;
-- pet shop;
-- escola;
-- campeonato esportivo;
-- outro domínio de interesse do aluno.
-
 ### Tema escolhido
 
-> Escreva aqui.
+> Gerenciamento de salão de beleza.
 
 ---
 
@@ -90,7 +70,7 @@ A descrição deve responder:
 
 ### Descrição
 
-> Escreva aqui.
+> Esse sistema consite em resolver problemas de agendamentos, financeiro e estoque de salões de beleza. O sistema ficará disponível para colabores, tais como: Cabeleireiro(@), manicure, gerente, caixa, financeiro, entre outros. Para gerenciar o salão de beleza será necessário o armazenamento de tabelas com informações de Colaboradores, Clientes, Preços, Estoque, Financeiro. E operações de agendamento de cliente, registros de produtos, vendas do estoque, registros de clientes e colaboradores e atualização de preço.
 
 ---
 
@@ -100,7 +80,7 @@ Explique qual é o principal objetivo do banco de dados proposto.
 
 ### Objetivo
 
-> Escreva aqui.
+> Gerenciamento de todo salão de beleza.
 
 ---
 
@@ -112,10 +92,10 @@ Liste as principais funcionalidades ou informações que deverão ser contemplad
 
 ### O banco deverá permitir:
 
-1. 
-2. 
-3. 
-4. 
+1. Registro e alteração de cliente; 
+2. Agendamento de cliente;   
+3. Registro e alteração de colaboradores;
+4. Registro e alteração de estoque;
 5. 
 
 ---
