@@ -1,1 +1,2 @@
 CREATE DATABASE gerenciamento_salao_beleza
+
