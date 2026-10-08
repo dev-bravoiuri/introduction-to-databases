@@ -132,14 +132,14 @@ USE loja_virtual;
 ## Código utilizado no seu projeto
 
 ```sql
--- Copie aqui o código utilizado.
+-- CREATE DATABASE gerenciamento_salao_beleza
 
 ```
 
 ## Nome definitivo do banco
 
-```text
-
+```
+gerenciamento_salao_beleza
 ```
 
 ---
@@ -210,10 +210,10 @@ CREATE TABLE nome_tabela (
 
 | Nº | Nome da tabela | Finalidade |
 |---:|---|---|
-| 1 |  |  |
-| 2 |  |  |
-| 3 |  |  |
-| 4 |  |  |
+| 1 |Agendamento|Realizar agendamento de clientes|
+| 2 |Clientes|Realizar cadastro e edição de clientes|
+| 3 |Colaborador|Realizar cadastro e edição de colaborador|
+| 4 |Produtos|Realizar cadastro e manejo de produtos do estabelecimento|
 | 5 |  |  |
 | 6 |  |  |
 
@@ -246,10 +246,10 @@ Se `PEDIDO` possui uma FK para `CLIENTE`, então `CLIENTE` deve existir antes de
 
 ## Ordem definida para o seu projeto
 
-1. 
-2. 
-3. 
-4. 
+1. Agendamento 
+2. Clientes
+3. Colaborador
+4. Produtos
 5. 
 6. 
 
@@ -275,10 +275,10 @@ id_cliente INT PRIMARY KEY AUTO_INCREMENT
 
 | Tabela | Chave primária | Utiliza `AUTO_INCREMENT`? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+|Agendamento|DATA_AGENDAMENTO|Não|
+|Clientes|CPF|Não|
+|Colaborador|ID_COLABORADOR|Sim|
+|Produtos|ID_PRODUTO|Sim| 
 
 ---
 
@@ -298,9 +298,9 @@ Não utilize `NOT NULL` indiscriminadamente. A restrição deve refletir uma reg
 
 | Tabela | Campo | Por que é obrigatório? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+|CLIENTES|CPF|Por que é chave primária|
+|COLABORADORES|NOME_COLABORADOR|Por ser nome do colaborador|
+|PRODUTOS|PREÇO_COMPRA|Por ser valor de produto|
 
 ---
 
@@ -324,8 +324,8 @@ cpf CHAR(11) NOT NULL UNIQUE
 
 | Tabela | Campo | Por que não pode se repetir? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
+|CLIENTES|CPF|Por ser CPF|
+|COLABORADORES|ID_COLABORADOR|Por ser identificador de cada colaborador|
 
 Caso nenhuma seja necessária, justifique:
 
@@ -358,7 +358,7 @@ status VARCHAR(20) NOT NULL DEFAULT 'ATIVO'
 
 Caso não utilize `DEFAULT`, justifique:
 
-> Escreva aqui.
+> Não foi necessário
 
 ---
 
