@@ -29,12 +29,12 @@ O aluno deverá compreender que uma `VIEW` representa uma consulta armazenada qu
 
 **Nome completo:**
 
-> Escreva aqui.
+> Iuri Bravo Carvalho
 
 **Banco utilizado:**
 
 ```text
-
+Gerenciamento salão de beleza
 ```
 
 ---
@@ -45,9 +45,9 @@ Identifique pelo menos três consultas das Sprints anteriores que são important
 
 | Consulta | Por que é útil? | Será transformada em VIEW? |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Relatório completo de agendamentos com dados dos clientes e serviços | Consolida o nome e telefone do cliente, a data e o valor do serviço agendado, facilitando a rotina da recepção. | Sim (`vw_relatorio_agendamentos`) |
+| Faturamento/Receita estimada agrupada por tipo de serviço | Permite acompanhar a demanda e o retorno financeiro por categoria de serviço oferecido no salão. | Sim (`vw_faturamento_por_servico`) |
+| Listagem de clientes inativos (sem agendamentos registrados) | Identifica os clientes que cadastraram perfil mas ainda não agendaram, ideal para campanhas de marketing. | Sim (`vw_clientes_sem_agendamento`) |
 |  |  |  |
 
 ---
@@ -84,27 +84,38 @@ INNER JOIN pedido AS p
 **Nome da VIEW:**
 
 ```text
-
+vw_relatorio_agendamentos
 ```
 
 **Pergunta que ela representa:**
 
-> Escreva aqui.
+> Como obter uma visão consolidada de todos os agendamentos realizados no salão, exibindo o nome e telefone do cliente, a data agendada, o serviço contratado e o preço cobrado?
 
 **SQL:**
 
 ```sql
--- Cole aqui.
+CREATE VIEW vw_relatorio_agendamentos AS
+SELECT 
+    c.NOME AS NOME_CLIENTE,
+    c.TELEFONE,
+    a.DATA_AGENDAMENTO,
+    s.NOME_SERVICO,
+    s.PRECO_SERVICOS
+FROM CLIENTES AS c
+INNER JOIN AGENDAMENTO AS a 
+    ON c.CPF = a.CPF
+INNER JOIN SERVICOS AS s 
+    ON a.NOME_SERVICO = s.NOME_SERVICO;
 ```
 
 **Tabelas utilizadas:**
 
-> Escreva aqui.
+> CLIENTES, AGENDAMENTO e SERVICOS
 
 **Como consultar essa VIEW?**
 
 ```sql
--- Cole aqui.
+SELECT * FROM vw_relatorio_agendamentos;
 ```
 
 ---
@@ -119,15 +130,23 @@ Esta VIEW deverá possuir, quando aplicável:
 
 **Pergunta:**
 
-> Escreva aqui.
+> Qual é o resumo de faturamento estimado e o total de marcações agrupados por tipo de serviço prestado no salão?
 
 ```sql
--- Cole aqui.
+CREATE VIEW vw_faturamento_por_servico AS
+SELECT 
+    s.NOME_SERVICO,
+    COUNT(a.NOME_SERVICO) AS TOTAL_AGENDAMENTOS,
+    SUM(s.PRECO_SERVICOS) AS FATURAMENTO_ESTIMADO
+FROM SERVICOS AS s
+INNER JOIN AGENDAMENTO AS a 
+    ON s.NOME_SERVICO = a.NOME_SERVICO
+GROUP BY s.NOME_SERVICO;
 ```
 
 **Explique:**
 
-> Escreva aqui.
+> Esta VIEW utiliza a cláusula `GROUP BY s.NOME_SERVICO` em conjunto com o `INNER JOIN` para agrupar as informações por tipo de serviço. A função de agregação `COUNT()` contabiliza o volume total de atendimentos de cada categoria, enquanto `SUM()` calcula a receita estimada, permitindo acompanhar o desempenho comercial do salão de forma simplificada.
 
 ---
 
@@ -150,17 +169,24 @@ pagamentos pendentes
 **Nome da VIEW:**
 
 ```text
-
+vw_produtos_margem_lucro
 ```
 
 ```sql
--- Cole aqui.
+CREATE VIEW vw_produtos_margem_lucro AS
+SELECT 
+    ID_PRODUTO,
+    NOME_PRODUTO,
+    PRECO_COMPRA,
+    PRECO_VENDA,
+    (PRECO_VENDA - PRECO_COMPRA) AS LUCRO_UNITARIO
+FROM PRODUTOS
+WHERE PRECO_VENDA > PRECO_COMPRA;
 ```
 
 **Por que essa VIEW é útil?**
 
-> Escreva aqui.
-
+> Esta VIEW é útil para a gestão financeira do salão, pois calcula em tempo real o lucro unitário de cada produto comercializado (`PRECO_VENDA - PRECO_COMPRA`)[cite: 14]. Ela permite identificar rapidamente quais itens geram maior rentabilidade, evitando cálculos manuais repetitivos por parte da equipa.
 ---
 
 # 7. Consultando uma VIEW
@@ -183,12 +209,19 @@ WHERE ...;
 **SQL executado:**
 
 ```sql
--- Cole aqui.
+SELECT 
+    ID_PRODUTO,
+    NOME_PRODUTO,
+    PRECO_VENDA,
+    LUCRO_UNITARIO
+FROM vw_produtos_margem_lucro
+WHERE LUCRO_UNITARIO >= 15.00
+ORDER BY LUCRO_UNITARIO DESC;
 ```
 
 **Resultado observado:**
 
-> Escreva aqui.
+> O MySQL Workbench executou a consulta sobre a VIEW aplicando com sucesso o filtro de rentabilidade e a ordenação decrescente. O resultado exibiu apenas os produtos cujo lucro unitário é igual ou superior a R$ 15,00, demonstrando que uma VIEW pode ser consultada e filtrada exatamente como se fosse uma tabela física do sistema.
 
 ---
 
@@ -207,18 +240,35 @@ Pode ser:
 **VIEW original:**
 
 ```sql
--- Cole aqui.
+CREATE VIEW vw_produtos_margem_lucro AS
+SELECT 
+    ID_PRODUTO,
+    NOME_PRODUTO,
+    PRECO_COMPRA,
+    PRECO_VENDA,
+    (PRECO_VENDA - PRECO_COMPRA) AS LUCRO_UNITARIO
+FROM PRODUTOS
+WHERE PRECO_VENDA > PRECO_COMPRA;
 ```
 
 **Nova versão:**
 
 ```sql
-CREATE OR REPLACE VIEW ...
+CREATE OR REPLACE VIEW vw_produtos_margem_lucro AS
+SELECT 
+    ID_PRODUTO,
+    NOME_PRODUTO,
+    PRECO_COMPRA,
+    PRECO_VENDA,
+    (PRECO_VENDA - PRECO_COMPRA) AS LUCRO_UNITARIO,
+    ROUND(((PRECO_VENDA - PRECO_COMPRA) / PRECO_COMPRA) * 100, 2) AS MARGEM_PERCENTUAL
+FROM PRODUTOS
+WHERE PRECO_VENDA > PRECO_COMPRA;
 ```
 
 **O que mudou?**
 
-> Escreva aqui.
+> Foi utilizada a instrução CREATE OR REPLACE VIEW para redefinir a estrutura da VIEW sem a necessidade de removê-la previamente. Adicionou-se o cálculo MARGEM_PERCENTUAL, que calcula a percentagem de lucro sobre o preço de compra de cada produto e arredonda o resultado a duas casas decimais.
 
 ---
 
@@ -240,12 +290,20 @@ DROP VIEW vw_teste;
 **Código utilizado:**
 
 ```sql
--- Cole aqui.
+-- 1. Criação da VIEW temporária para teste
+CREATE VIEW vw_teste AS
+SELECT 
+    ID_PRODUTO,
+    NOME_PRODUTO
+FROM PRODUTOS;
+
+-- 2. Remoção controlada da VIEW temporária
+DROP VIEW vw_teste;
 ```
 
 **Qual a diferença entre `DROP VIEW` e `DROP TABLE`?**
 
-> Escreva aqui.
+> O comando `DROP VIEW` elimina apenas a estrutura virtual (a consulta salva no dicionário de dados), sem apagar ou afetar nenhum dado armazenado nas tabelas base do banco de dados. Já o comando `DROP TABLE` remove permanentemente a tabela física do disco, juntamente com todos os registos e dados armazenados nela.
 
 ---
 
@@ -260,9 +318,11 @@ WHERE Table_type = 'VIEW';
 
 **Views encontradas:**
 
-1. 
-2. 
-3. 
+1. vw_relatorio_agendamentos
+
+2. vw_faturamento_por_servico
+
+3. vw_produtos_margem_lucro
 
 ---
 
@@ -277,18 +337,21 @@ Faça um teste:
 **VIEW testada:**
 
 ```text
-
+vw_produtos_margem_lucro
 ```
 
 **Alteração realizada:**
 
 ```sql
--- Cole aqui.
+-- 
+UPDATE PRODUTOS 
+SET PRECO_COMPRA = 10.00 
+WHERE ID_PRODUTO = 1;
 ```
 
 **Resultado observado:**
 
-> Escreva aqui.
+> Atualização do preço de compra de um produto na tabela base
 
 ---
 
@@ -308,7 +371,7 @@ Explique:
 4. qual problema resolve;
 5. o que muda se os dados das tabelas originais forem alterados.
 
-> Escreva aqui.
+> De quais tabelas ela depende: Depende das tabelas CLIENTES, AGENDAMENTO e SERVICOS. Qual relacionamento utiliza: Utiliza junções internas (INNER JOIN), relacionando CLIENTES.CPF com AGENDAMENTO.CPF e SERVICOS.NOME_SERVICO com AGENDAMENTO.NOME_SERVICO. Quais campos apresenta: Apresenta os campos NOME_CLIENTE (aliado de NOME), TELEFONE, DATA_AGENDAMENTO, NOME_SERVICO e PRECO_SERVICOS. Qual problema resolve: Elimina a necessidade de escrever comandos JOIN complexos repetidamente na receção do salão, centralizando a consulta operacional de agendamentos numa única fonte confiável. O que muda se os dados das tabelas originais forem alterados: Como a VIEW é uma tabela virtual que consulta os dados em tempo real, qualquer alteração, inserção ou remoção efetuada nas tabelas base é refletida imediatamente na consulta da VIEW.
 
 ---
 
@@ -360,9 +423,9 @@ USE nome_do_banco;
 
 | Problema | Causa | Solução |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Erro ao tentar atualizar ou inserir dados através de uma VIEW com agregação | VIEWs que utilizam `GROUP BY`, `SUM()`, `COUNT()` ou `JOIN` são classificadas como não-atualizáveis no MySQL | Realizar inserções ou atualizações diretamente nas tabelas base de dados (`SERVICOS`, `AGENDAMENTO`, `PRODUTOS`) |
+| Erro de coluna desconhecida (`Unknown column`) ao criar a VIEW | Referência a nomes de colunas inexistentes ou incorretas nas tabelas de origem | Verificar a estrutura real do esquema com o comando `DESCRIBE nome_tabela;` e ajustar os campos no `SELECT` |
+| Conflito de nomes ao tentar recriar uma VIEW com estrutura diferente | Utilização da sintaxe simples `CREATE VIEW` em uma VIEW que já existe na base de dados | Utilizar a sintaxe `CREATE OR REPLACE VIEW` para redefinir a estrutura da VIEW existente |
 
 ---
 
@@ -384,18 +447,18 @@ COMPREENDER
 
 # 17. Checklist
 
-- [ ] utilizei o banco do projeto;
-- [ ] criei pelo menos 3 Views;
-- [ ] pelo menos uma View usa JOIN;
-- [ ] pelo menos uma View usa agregação ou resumo;
-- [ ] consultei as Views;
-- [ ] utilizei `CREATE OR REPLACE VIEW`;
-- [ ] pratiquei `DROP VIEW`;
-- [ ] validei as Views;
-- [ ] testei mudança em tabela base;
-- [ ] compreendo de onde vêm os dados de cada View;
-- [ ] salvei `SPRINT3-5.md`;
-- [ ] salvei `SPRINT3-5.sql`.
+- [v] utilizei o banco do projeto;
+- [v] criei pelo menos 3 Views;
+- [v] pelo menos uma View usa JOIN;
+- [v] pelo menos uma View usa agregação ou resumo;
+- [v] consultei as Views;
+- [v] utilizei `CREATE OR REPLACE VIEW`;
+- [v] pratiquei `DROP VIEW`;
+- [v] validei as Views;
+- [v] testei mudança em tabela base;
+- [v] compreendo de onde vêm os dados de cada View;
+- [v] salvei `SPRINT3-5.md`;
+- [v] salvei `SPRINT3-5.sql`.
 
 ---
 
